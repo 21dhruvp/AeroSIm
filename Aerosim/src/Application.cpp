@@ -122,10 +122,6 @@ int main(void)
 			2, 3, 0
 		};
 
-		unsigned int vao;
-		glGenVertexArrays(1, &vao);
-		glBindVertexArray(vao);
-
         VertexArray va;
 		VertexBuffer vb(pos, 4 * 2 * sizeof(float));
         VertexBufferLayout layout;
@@ -144,6 +140,7 @@ int main(void)
 		ASSERT(location != -1);
 		glUniform4f(location, 0.2f, 0.3f, 0.8f, 1.0f);
 
+        va.Unbind();
 		glUseProgram(0);
 		glBindBuffer(GL_ARRAY_BUFFER, 0);
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
