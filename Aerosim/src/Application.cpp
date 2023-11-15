@@ -12,6 +12,7 @@
 #include "IndexBuffer.h"
 #include "VertexArray.h"
 #include "Shader.h"
+#include "FoilMath.h"
 #include "glm/glm.hpp"
 #include "glm/gtc/matrix_transform.hpp"
 
@@ -47,25 +48,44 @@ int main(void)
     if (glewInit() != GLEW_OK)
         return -1;
     {
-		GLfloat pos[] = {
-			400.0f, 180.0f,   //0
-			880.0f, 180.0f,    //1
-			880.0f, 540.0f,     //2
-			400.0f, 540.0f,    //3
-		};
+        // Make a bunch of points on an interval for the top and bottom
+        // add 640 to x and 360 to y to translate from 0 - 1 to 1280x720
+        const int STEP = 10;
+        const int NUMVERT = (STEP * 4) + 2;             // Number of vertices * number of coords
+        FoilMath fm(4412);                              // TODO: make user input
 
-		GLuint indices[] = {
-			0, 1, 2,
-			2, 3, 0
-		};
+        GLfloat pos[NUMVERT];
+
+        for (float i = 0.0; i < STEP; ++i) {
+            glm::vec2 top = fm.TopFoil(i / STEP);
+            glm::vec2 bot = fm.BotFoil(i / STEP);
+            pos[((int)i * 2)] = top.x;                  // top vertices will be first half of array
+            pos[((int)i * 2) + 1] = top.y;              
+            pos[NUMVERT - 2 - ((int)i * 2)] = bot.x;    // bot vertices will be last half of array and reversed
+            pos[NUMVERT - 1 - ((int)i * 2)] = bot.y;
+        }
+
+        pos[(STEP*4)] = 0.5;
+        pos[(STEP*4) + 1] = fm.MeanLine(0.5);
+
+        const int NUMINDS = STEP * 3;
+        GLuint indices[NUMINDS];
+        int j = 0;
+
+        // Create indices array such that it is STEP (mid of mean line), vert1, vert2
+        for (int i = 0; i < STEP; ++i) { 
+            indices[j++] = STEP;
+            indices[j++] = i;
+            indices[j++] = i+1;
+        }
 
         VertexArray va;
-		VertexBuffer vb(pos, 4 * 2 * sizeof(float));
+		VertexBuffer vb(pos, NUMVERT * sizeof(float));
         VertexBufferLayout layout;
         layout.Push<float>(2);
         va.AddBuffer(vb, layout);
 
-		IndexBuffer ib(indices, 6);
+        IndexBuffer ib(indices, STEP * 3);
 
         glm::mat4 proj = glm::ortho(0.0f, 1280.0f, 0.0f, 720.0f, -1.0f, 1.0f);
 

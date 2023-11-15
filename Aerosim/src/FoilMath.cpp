@@ -1,6 +1,5 @@
 #include "FoilMath.h"
 #include <math.h>
-#include <glm/vec2.hpp>
 
 FoilMath::FoilMath() {
 	NACAInput = 4412;
@@ -12,8 +11,8 @@ FoilMath::FoilMath(unsigned int N) {
 	CalcConsts();
 }
 
-double FoilMath::MeanLine(double x) {
-	double poly = 0.2969 * sqrt(x) - 0.1260 * x - 0.3516 * x * x -
+float FoilMath::MeanLine(float x) {
+	float poly = 0.2969 * sqrt(x) - 0.1260 * x - 0.3516 * x * x -
 		0.2843 * pow(x, 3) - 0.1015 * pow(x, 4);
 	if (i * x <= 1 && i * x >= 0) {
 		return (t / 0.2) * poly;
@@ -21,7 +20,7 @@ double FoilMath::MeanLine(double x) {
 	return NAN;
 }
 
-double FoilMath::ChordLine(double x) {
+float FoilMath::ChordLine(float x) {
 	if (i * x <= p && i * x >= 0) {
 		return (m / (p * p)) * (2 * p * x - x * x);
 	} else if (i * x <= 1) {
@@ -30,7 +29,7 @@ double FoilMath::ChordLine(double x) {
 	return NAN;
 }
 
-double FoilMath::DChordLine(double x) {
+float FoilMath::DChordLine(float x) {
 	if (i * x <= p && i * x >= 0) {
 		return (m / (p * p)) * (2 * p - 2 * x);
 	} else if (i * x <= 1) {
@@ -39,15 +38,15 @@ double FoilMath::DChordLine(double x) {
 	return NAN;
 }
 
-glm::vec2 FoilMath::TopFoil(double T) {
-	double x = T - MeanLine(T)*sin(atan(DChordLine(T)));
-	double y = ChordLine(T)+MeanLine(T)*cos(atan(DChordLine(T)));
+glm::vec2 FoilMath::TopFoil(float T) {
+	float x = T - MeanLine(T)*sin(atan(DChordLine(T)));
+	float y = ChordLine(T)+MeanLine(T)*cos(atan(DChordLine(T)));
 	return glm::vec2(x, y);
 }
 
-glm::vec2 FoilMath::BotFoil(double B) {
-	double x = B + MeanLine(B) * sin(atan(DChordLine(B)));
-	double y = ChordLine(B) - MeanLine(B) * cos(atan(DChordLine(B)));
+glm::vec2 FoilMath::BotFoil(float B) {
+	float x = B + MeanLine(B) * sin(atan(DChordLine(B)));
+	float y = ChordLine(B) - MeanLine(B) * cos(atan(DChordLine(B)));
 	return glm::vec2(x, y);
 }
 
