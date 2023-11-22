@@ -13,26 +13,26 @@ FoilMath::FoilMath(unsigned int N) {
 
 float FoilMath::MeanLine(float x) {
 	float poly = 0.2969 * sqrt(x) - 0.1260 * x - 0.3516 * x * x -
-		0.2843 * pow(x, 3) - 0.1015 * pow(x, 4);
-	if (i * x <= 1 && i * x >= 0) {
+		0.2843 * (float)pow(x, 3) - 0.1015 * (float)pow(x, 4);
+	if (i * x <= 1.0f && i * x >= 0.0f) {
 		return (t / 0.2) * poly;
 	}
 	return NAN;
 }
 
 float FoilMath::ChordLine(float x) {
-	if (i * x <= p && i * x >= 0) {
+	if (i * x <= p && i * x >= 0.0f) {
 		return (m / (p * p)) * (2 * p * x - x * x);
-	} else if (i * x <= 1) {
+	} else if (i * x <= 1.0f) {
 		return (m / ((1 - p) * (1 - p))) * ((1 - 2 * p) + 2 * p * x - x * x);
 	}
 	return NAN;
 }
 
 float FoilMath::DChordLine(float x) {
-	if (i * x <= p && i * x >= 0) {
+	if (i * x <= p && i * x >= 0.0f) {
 		return (m / (p * p)) * (2 * p - 2 * x);
-	} else if (i * x <= 1) {
+	} else if (i * x <= 1.0f) {
 		return (m / ((1 - p) * (1 - p))) * (2 * p - 2 * x);
 	}
 	return NAN;
